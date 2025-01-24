@@ -1,0 +1,74 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 4817015 */
+  src: url('//at.alicdn.com/t/c/font_4817015_tqsvdm070ne.woff2?t=1737684301087') format('woff2'),
+       url('//at.alicdn.com/t/c/font_4817015_tqsvdm070ne.woff?t=1737684301087') format('woff'),
+       url('//at.alicdn.com/t/c/font_4817015_tqsvdm070ne.ttf?t=1737684301087') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-edit:before {
+  content: "\e627";
+}
+
+.icon-xiangxiasanjiaoxing:before {
+  content: "\e64a";
+}
+
+.icon-gouxuan:before {
+  content: "\e736";
+}
+
+.icon-insurance:before {
+  content: "\e636";
+}
+
+.icon-weizhi:before {
+  content: "\e688";
+}
+
+.icon-parkinglot:before {
+  content: "\e6de";
+}
+
+.icon-clean:before {
+  content: "\e619";
+}
+
+.icon-maintenance:before {
+  content: "\e7ef";
+}
+
+.icon-fuelcost:before {
+  content: "\e69d";
+}
+
+.icon-repair:before {
+  content: "\e613";
+}
+
+.icon-ETC:before {
+  content: "\e60e";
+}
+
+.icon-other:before {
+  content: "\e681";
+}
+
+.icon-violation:before {
+  content: "\e642";
+}
+
+.icon-refit:before {
+  content: "\e624";
+}
+
+.icon-charge:before {
+  content: "\e83c";
+}
