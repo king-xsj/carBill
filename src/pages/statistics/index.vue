@@ -1,6 +1,6 @@
 <template>
   <view class="statistics">
-    <image class="img" mode="aspectFill" widthFix src="/static/other/xiaoxin.jpg"></image>
+    <image class="img" mode="aspectFill" src="/static/other/xiaoxin.jpg"></image>
     <uni-fab
       ref="fab"
       :pattern="baseFab.pattern"

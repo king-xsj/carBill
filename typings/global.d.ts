@@ -3,8 +3,8 @@ declare module '*/**'
 declare module '*'
 
 declare interface IResponseModel<T> {
-  retCode: number
-  retMsg: string
+  code: number
+  msg: string
   data?: T
 }
 

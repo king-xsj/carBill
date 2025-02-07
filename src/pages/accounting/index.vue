@@ -1,7 +1,7 @@
 <template>
   <view class="accounting">
     <view class="bill-input">
-      <input class="uni-input" placeholder="0.00" />
+      <input v-model="amount" class="uni-input" placeholder="0.00" />
       <view class="desc">
         <text class="iconfont" :class="selectedBillType.icon"></text>
         <text class="text" @click="handleShowBillType">{{ selectedBillType.text }}</text>
@@ -14,7 +14,7 @@
         <text>选择位置</text>
       </view>
       <textarea v-model="remark" class="textarea" placeholder="备注..."></textarea>
-      <button type="primary" plain="true" class="save-btn">保存</button>
+      <button type="primary" plain="true" class="save-btn" @click="handleSave">保存</button>
     </view>
   </view>
   <uni-popup ref="popup" type="bottom" border-radius="10px 10px 0 0">
@@ -50,68 +50,14 @@
 <script lang="ts" setup>
 import { ref, onMounted, reactive } from 'vue'
 import { IbillType } from '@/types/index'
-import { getBillTypes } from '@/api/billTypes'
+import { getBillTypes, addBillDetail } from '@/api/billTypes'
 import dayjs from 'dayjs'
+import { showToast } from '@/utils'
 const billTime = ref<String>('')
 const remark = ref<String>('')
 const popup = ref(null)
-const billType: IbillType[] = [
-  {
-    text: '燃油',
-    icon: 'icon-fuelcost',
-    type: 'REFUEL'
-  },
-  {
-    text: '充电',
-    icon: 'icon-charge',
-    type: 'CHARGING'
-  },
-  {
-    text: '停车',
-    icon: 'icon-parkinglot',
-    type: 'PARKING'
-  },
-  {
-    text: '高速通行费',
-    icon: 'icon-ETC',
-    type: 'ETC'
-  },
-  {
-    text: '清洁',
-    icon: 'icon-clean',
-    type: 'WASHING'
-  },
-  {
-    text: '保养',
-    icon: 'icon-maintenance',
-    type: 'SERVICE'
-  },
-  {
-    text: '违章',
-    icon: 'icon-violation',
-    type: 'PENALTY'
-  },
-  {
-    text: '保险',
-    icon: 'icon-insurance',
-    type: 'INSURANCE'
-  },
-  {
-    text: '维修',
-    icon: 'icon-repair',
-    type: 'FIX'
-  },
-  {
-    text: '改装',
-    icon: 'icon-refit',
-    type: 'UPGRADE'
-  },
-  {
-    text: '其他',
-    icon: 'icon-other',
-    type: 'OTHER'
-  }
-]
+const billType = ref<IbillType[]>([])
+const amount = ref<Number>()
 const selectedBillType: IbillType = reactive({
   text: '燃油',
   icon: 'icon-fuelcost',
@@ -220,10 +166,29 @@ const handleSelectedType = (item: IbillType) => {
   selectedBillType.type = item.type
   popup.value.close()
 }
+const handleSave = async () => {
+  const { code, data, msg } = await addBillDetail({
+    amount: parseFloat(amount.value),
+    type: selectedBillType.type,
+    billTime: billTime.value,
+    location: '深圳',
+    typeIcon: selectedBillType.icon,
+    typeName: selectedBillType.text,
+    carId: '',
+    remark: remark.value
+  })
+  console.log(code, data, msg)
+  if (code === 200) {
+    showToast('添加成功')
+  } else {
+    console.log('error')
+  }
+}
 onMounted(async () => {
   billTime.value = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
-  const { retCode, data, retMsg } = await getBillTypes()
-  console.log(retCode, data, retMsg)
+  const { code, data, msg } = await getBillTypes()
+  console.log(code, data, msg)
+  billType.value = data
 })
 </script>
 

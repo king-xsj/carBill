@@ -15,7 +15,8 @@
     {
       "path": "pages/billdetaill/index",
       "style": {
-        "navigationBarTitleText": "明细"
+        "navigationBarTitleText": "明细",
+        "enablePullDownRefresh": true
       }
     },
     {

@@ -8,7 +8,7 @@
       <view class="right">统计：110元</view>
     </view>
     <view class="bill-detail-container">
-      <view class="bill-detail-list">
+      <view v-if="billDetailList.length" class="bill-detail-list">
         <uni-swipe-action>
           <uni-swipe-action-item
             v-for="item in billDetailList"
@@ -32,7 +32,7 @@
                 </view>
                 <view class="time">
                   <text>
-                    {{ item.createTime }}
+                    {{ item.billTime }}
                   </text>
                 </view>
               </view>
@@ -44,11 +44,12 @@
           </uni-swipe-action-item>
         </uni-swipe-action>
       </view>
+      <view class="noneData">{{ loadMoreText }}</view>
     </view>
     <uni-popup ref="popup" :mask-click="false">
       <view class="opt-date">
         <text class="cancel" @click="handleHidePopup">取消</text>
-        <text class="confirm" @click="handleHidePopup">确认</text>
+        <text class="confirm" @click="handleConfirmPopup">确认</text>
       </view>
       <picker-view
         v-if="visible"
@@ -70,142 +71,21 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
+import { getBillDetailList } from '@/api/billTypes'
+import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
+import dayjs from 'dayjs'
 const year = ref<String | Number>('')
 const years = ref<Number[]>([])
 const month = ref<String | Number>('')
 const months = ref<Number[]>([])
+const date = ref<String>('')
 const popup = ref(null)
 const billTime = ref<Number[]>([])
 const visible = ref<Boolean>(false)
 const indicatorStyle = `height: 50px;color:#333;`
-const billDetailList = [
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '1',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'REFUEL',
-    typeIcon: 'icon-fuelcost',
-    typeName: '燃油',
-    createTime: '2025-01-01 08:08'
-  },
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '2',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'PARKING',
-    typeIcon: 'icon-parkinglot',
-    typeName: '停车',
-    createTime: '2025-01-01 08:08'
-  },
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '2',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'PARKING',
-    typeIcon: 'icon-parkinglot',
-    typeName: '停车',
-    createTime: '2025-01-01 08:08'
-  },
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '2',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'PARKING',
-    typeIcon: 'icon-parkinglot',
-    typeName: '停车',
-    createTime: '2025-01-01 08:08'
-  },
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '2',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'PARKING',
-    typeIcon: 'icon-parkinglot',
-    typeName: '停车',
-    createTime: '2025-01-01 08:08'
-  },
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '2',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'PARKING',
-    typeIcon: 'icon-parkinglot',
-    typeName: '停车',
-    createTime: '2025-01-01 08:08'
-  },
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '2',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'PARKING',
-    typeIcon: 'icon-parkinglot',
-    typeName: '停车',
-    createTime: '2025-01-01 08:08'
-  },
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '2',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'PARKING',
-    typeIcon: 'icon-parkinglot',
-    typeName: '停车',
-    createTime: '2025-01-01 08:08'
-  },
-  {
-    amount: '60.00',
-    cardId: '',
-    cardName: '',
-    city: '',
-    id: '2',
-    licensePlate: '',
-    location: '',
-    remark: '',
-    type: 'PARKING',
-    typeIcon: 'icon-parkinglot',
-    typeName: '停车',
-    createTime: '2025-01-01 08:08'
-  }
-]
+const billDetailList = ref<any[]>([])
+const loadMoreText = ref<String>('')
+const totalPage = ref()
 const options = [
   {
     text: '删除',
@@ -214,21 +94,63 @@ const options = [
     }
   }
 ]
+const pageNum = ref<Number>(1)
+const loadMore = () => {
+  getBillDetailList({ date: dayjs(date.value).format('YYYY-MM'), pageNum: pageNum.value, pageSize: 10 }).then(res => {
+    console.log(res)
+    if (res.code === 200) {
+      // 总行数取余页面大小，等于0，则页数为整页数，否则有余数，则页数为正页数加一
+      totalPage.value = parseInt(res.data.total) % 10 === 0 ? res.data.total / 10 : Math.ceil(res.data.total / 10)
+      if (pageNum.value === 1) {
+        billDetailList.value = res.data.rows
+      } else {
+        billDetailList.value = [...billDetailList.value, ...res.data.rows]
+      }
+      if (totalPage.value === pageNum.value) {
+        loadMoreText.value = '已经到底了！！！'
+      }
+    }
+  })
+}
+onReachBottom(() => {
+  loadMoreText.value = '加载中...'
+  if (totalPage.value === pageNum.value) {
+    loadMoreText.value = '已经到底了！！！'
+  } else {
+    pageNum.value++
+    loadMore()
+  }
+})
+onPullDownRefresh(async () => {
+  // 清除列表数据（可选）
+  billDetailList.value = []
+  pageNum.value = 1
+  // 重新获取数据
+  await loadMore()
+  // 停止下拉刷新动画（重要）
+  uni.stopPullDownRefresh()
+})
 onMounted(() => {
-  const date = new Date()
-  year.value = date.getFullYear()
-  month.value = date.getMonth() + 1
-  for (let i = 1990; i <= date.getFullYear(); i++) {
+  const NOW = new Date()
+  year.value = NOW.getFullYear()
+  month.value = NOW.getMonth() + 1
+  for (let i = 1990; i <= NOW.getFullYear(); i++) {
     years.value.push(i)
   }
   for (let i = 1; i <= 12; i++) {
     months.value.push(i)
   }
-  billTime.value = [9999, month.value - 1]
+  billTime.value = [year.value, month.value - 1]
+  date.value = `${year.value}-${month.value}`
+  loadMore()
 })
 const handleShowDate = () => {
   popup.value.open('bottom')
   visible.value = true
+}
+const handleConfirmPopup = () => {
+  handleHidePopup()
+  loadMore()
 }
 const handleHidePopup = () => {
   console.log(billTime.value)
@@ -240,6 +162,7 @@ const handleChange = (e: any) => {
   year.value = years.value[val[0]]
   month.value = months.value[val[1]]
   billTime.value = val
+  date.value = `${year.value}-${month.value}`
 }
 </script>
 
@@ -283,6 +206,10 @@ const handleChange = (e: any) => {
   }
 }
 .bill-detail-container {
+  .noneData {
+    text-align: center;
+    color: $u-tips-color;
+  }
   .bill-detail-list {
     padding: 0 30rpx;
     .bill-detail-swiper {

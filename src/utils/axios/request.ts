@@ -82,7 +82,7 @@ export class Request {
         const store = useStore()
         console.log(store.state.user.token)
         const token =
-          'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkZTg3ZDE0YzA3OTc0Y2UyODAyNWE5MDE2ZGNiOWNhMSIsInN1YiI6IjEiLCJpc3MiOiJ6aGl5aSIsImlhdCI6MTczNzcwMTY4MSwiZXhwIjoxNzM4OTk3NjgxfQ.wWxVGmOnk1I0-nSJhbCE60wL8vs-VR3-yxziIp9uPaQ' // store.state.user.token
+          'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyY2FmOTQ1ODBlMWM0N2NmODM0M2MzMDU1ODVjYzg3OSIsInN1YiI6IjEiLCJpc3MiOiJ6aGl5aSIsImlhdCI6MTczODkyMDY4NiwiZXhwIjoxNzQwMjE2Njg2fQ.g_zTLY3FGcR2ktrMxl-3a1o_KNkgQXt5aJiCkVz-Y6Y' // store.state.user.token
         const hasToken = typeof request.token !== 'undefined'
         if (!hasToken) {
           if (token) request.headers['Token'] = token
@@ -100,11 +100,11 @@ export class Request {
     // 响应结果拦截器处理
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse<any>) => {
-        const { retCode, retMsg } = response.data
-        if (retCode === 200) {
+        const { code, msg } = response.data
+        if (code === 200) {
           return response
         } else {
-          showToast(retMsg || '服务器响应失败，请重试')
+          showToast(msg || '服务器响应失败，请重试')
           return Promise.reject(response)
         }
       },
