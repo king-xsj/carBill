@@ -54,7 +54,10 @@ import { getBillTypes, addBillDetail } from '@/api/billTypes'
 import dayjs from 'dayjs'
 import { showToast } from '@/utils'
 const props = defineProps({
-  id: String
+  id: {
+    type: String,
+    default: ''
+  }
 })
 console.log('id=' + props.id) // id=10
 const billTime = ref<String>('')
