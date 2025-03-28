@@ -29,3 +29,11 @@ export const getBillDetailList = (data: any) => {
     params: data
   })
 }
+export const getBillStatistics = (data: any) => {
+  return axios.request<IResponseModel<any>>({
+    baseURL: import.meta.env.VITE_APP_BASE_API,
+    url: '/bill/statistics',
+    method: 'get',
+    params: data
+  })
+}

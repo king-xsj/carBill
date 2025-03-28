@@ -53,6 +53,10 @@ import { IbillType } from '@/types/index'
 import { getBillTypes, addBillDetail } from '@/api/billTypes'
 import dayjs from 'dayjs'
 import { showToast } from '@/utils'
+const props = defineProps({
+  id: String
+})
+console.log('id=' + props.id) // id=10
 const billTime = ref<String>('')
 const remark = ref<String>('')
 const popup = ref(null)
@@ -184,6 +188,7 @@ const handleSave = async () => {
     console.log('error')
   }
 }
+
 onMounted(async () => {
   billTime.value = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
   const { code, data, msg } = await getBillTypes()

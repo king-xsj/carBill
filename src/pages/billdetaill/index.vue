@@ -5,7 +5,7 @@
         <text>{{ year }}年{{ month }}月</text>
         <text class="iconfont icon-xiangxiasanjiaoxing"></text>
       </view>
-      <view class="right">统计：110元</view>
+      <view class="right">统计：{{ totalAmount }}元</view>
     </view>
     <view class="bill-detail-container">
       <view v-if="billDetailList.length" class="bill-detail-list">
@@ -38,7 +38,7 @@
               </view>
               <view class="right">
                 <text class="amount">{{ item.amount }}</text>
-                <text class="iconfont icon-edit"></text>
+                <text class="iconfont icon-edit" @click="handleEdit(item.id)"></text>
               </view>
             </view>
           </uni-swipe-action-item>
@@ -71,7 +71,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import { getBillDetailList } from '@/api/billTypes'
+import { getBillDetailList, getBillStatistics } from '@/api/billTypes'
 import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 import dayjs from 'dayjs'
 const year = ref<String | Number>('')
@@ -106,9 +106,23 @@ const loadMore = () => {
       } else {
         billDetailList.value = [...billDetailList.value, ...res.data.rows]
       }
+      if (!res.data.rows.length) {
+        loadMoreText.value = '暂无数据！'
+      }
       if (totalPage.value === pageNum.value) {
         loadMoreText.value = '已经到底了！！！'
       }
+    }
+  })
+}
+const totalAmount = ref<number | string>()
+const getBillStatisticsByMonth = () => {
+  getBillStatistics({ date: dayjs(date.value).format('YYYY-MM') }).then(res => {
+    console.log(res)
+    if (res.code === 200) {
+      totalAmount.value = res.data.totalAmount
+    } else {
+      console.log(res.msg)
     }
   })
 }
@@ -143,7 +157,9 @@ onMounted(() => {
   billTime.value = [year.value, month.value - 1]
   date.value = `${year.value}-${month.value}`
   loadMore()
+  getBillStatisticsByMonth()
 })
+
 const handleShowDate = () => {
   popup.value.open('bottom')
   visible.value = true
@@ -151,6 +167,7 @@ const handleShowDate = () => {
 const handleConfirmPopup = () => {
   handleHidePopup()
   loadMore()
+  getBillStatisticsByMonth()
 }
 const handleHidePopup = () => {
   console.log(billTime.value)
@@ -163,6 +180,12 @@ const handleChange = (e: any) => {
   month.value = months.value[val[1]]
   billTime.value = val
   date.value = `${year.value}-${month.value}`
+}
+
+const handleEdit = id => {
+  uni.navigateTo({
+    url: '/pages/accounting/index?id=' + id
+  })
 }
 </script>
 
@@ -207,6 +230,7 @@ const handleChange = (e: any) => {
 }
 .bill-detail-container {
   .noneData {
+    padding-top: 30rpx;
     text-align: center;
     color: $u-tips-color;
   }

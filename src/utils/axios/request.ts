@@ -82,7 +82,7 @@ export class Request {
         const store = useStore()
         console.log(store.state.user.token)
         const token =
-          'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyY2FmOTQ1ODBlMWM0N2NmODM0M2MzMDU1ODVjYzg3OSIsInN1YiI6IjEiLCJpc3MiOiJ6aGl5aSIsImlhdCI6MTczODkyMDY4NiwiZXhwIjoxNzQwMjE2Njg2fQ.g_zTLY3FGcR2ktrMxl-3a1o_KNkgQXt5aJiCkVz-Y6Y' // store.state.user.token
+          'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZDg1NmM3YjBjNzc0NDViOGY2ZDQwOTUwMjM5NWMxNiIsInN1YiI6IjEiLCJpc3MiOiJ6aGl5aSIsImlhdCI6MTc0MzE0MDkwOCwiZXhwIjoxNzQ0NDM2OTA4fQ.T5vk7kaOj7ZskufcPMxZ-ATp2b_0C8JS-iNDP3mLAGk'
         const hasToken = typeof request.token !== 'undefined'
         if (!hasToken) {
           if (token) request.headers['Token'] = token
